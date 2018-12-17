@@ -1,6 +1,4 @@
-$(document).ready(function() {
-
- // Initializes Firebase
+// Initializes Firebase
  var config = {
     apiKey: "AIzaSyB1Ceu217BWTDvXWFGLuNwegmEZxy6iL8I",
     authDomain: "train-scheduler-9fe5b.firebaseapp.com",
@@ -18,26 +16,26 @@ var database = firebase.database();
     event.preventDefault();
 
 // Stores user input as an object
-    var newTrain = {
-        name: $("#train-name").val().trim(),
-        destination: $("#destination").val().trim(),
-        time: $("#train-time").val().trim(),
-        frequency: $("#frequency").val().trim()
-    };
+    var name = $("#train-name").val().trim();
+    var destination = $("#destination").val().trim();
+    var time = $("#train-time").val().trim();
+    var frequency = $("#frequency").val().trim();
 
 // Creates a temporary object for train data
 var trainData = {
-    name: newTrain.name,
-    destination: newTrain.destination,
-    time: newTrain.time,
-    frequency: newTrain.frequency 
+    name: name,
+    destination: destination,
+    time: time,
+    frequency: frequency 
 }
-
 // Pushes new train data to database
     database.ref().push(trainData);
 
 // Logs new train data to the console
-    console.log(trainData);
+    console.log(trainData.name);
+    console.log(trainData.destination);
+    console.log(trainData.time);
+    console.log(trainData.frequency);
 
 // Clears all text boxes
     $("#train-name").val("");
@@ -63,25 +61,24 @@ console.log(trainTime);
 console.log(trainFrequency);
 
 // Calculates next arrival
-var nextArrival = moment().diff(moment.unix(trainTime), "minutes");
-var minutesAway = 
+var diffTime = moment().diff(moment.unix(trainTime), "minutes");
+console.log(diffTime);
+var timeRemainder = moment().diff(moment.unix(trainTime), "minutes") % trainFrequency;
 
+// Minutes before next train
+var minutesAway = trainFrequency - timeRemainder;
+
+// Next train arrival
+var nextArrival = moment().add(minutesAway, "m").format("HH:mm A");
 
 // Pushes new trains to the table
-    function addToTable(newTrainObj) {
-        var newRow = $("<tr>");
-        var nameCol = $("<td>").text(newTrainObj.name);
-        newRow.append(nameCol);
-        var destinationCol = $("<td>").text(newTrainObj.destination);
-        newRow.append(destinationCol)
-        var frequencyCol = $("<td>").text(newTrainObj.frequency);
-        newRow.append(frequencyCol);
-        var nextTrainCol = $("<td>").text("Compute me");
-        newRow.append(nextTrainCol);
-        var minutesAwayCol = $("<td>").text("Compute me");
-        newRow.append(minutesAwayCol);
+var newRow = $("<tr>").append(
+    $("<td>").text(trainName),
+    $("<td>").text(trainDestination),
+    $("<td>").text(trainFrequency),
+    $("<td>").text(nextArrival),
+    $("<td>").text(minutesAway)
+);
 
-        $("#train-data").append(newRow);
-    }
-});
+    $("#train-data").append(newRow);
 });
