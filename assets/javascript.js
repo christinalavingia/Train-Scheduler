@@ -18,7 +18,7 @@ var database = firebase.database();
 // Stores user input as an object
     var name = $("#train-name").val().trim();
     var destination = $("#destination").val().trim();
-    var time = $("#train-time").val().trim();
+    var time = moment($("#train-time").val().trim());
     var frequency = $("#frequency").val().trim();
 
 // Creates a temporary object for train data
