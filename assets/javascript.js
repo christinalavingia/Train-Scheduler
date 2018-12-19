@@ -40,7 +40,7 @@ function addToTable(newTrainObj) {
     $("#train-data").append(newRow);
 }
 
-ref.on("child_added", function(snapshot) {
+ref.on("child_added", function (snapshot) {
     addToTable(snapshot.val());
 });
 
