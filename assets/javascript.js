@@ -17,6 +17,14 @@ function addTrain(newTrainObj) {
 }
 
 function addToTable(newTrainObj) {
+    var firstTimeConverted = moment(newTrainObj.time, "HH:mm");
+    var currentTime = moment();
+    var diffTime = currentTime.diff(firstTimeConverted, "minutes");
+    var tRemainder = diffTime % newTrainObj.frequency;
+    var minutesTillTrain = newTrainObj.frequency - tRemainder;
+    var nextTrain = moment().add(minutesTillTrain, "minutes");
+    var nextTrainFormatted = nextTrain.format("HH:mm");
+
     var newRow = $("<tr>");
     var nameCol = $("<td>").text(newTrainObj.name);
     newRow.append(nameCol);
@@ -24,16 +32,15 @@ function addToTable(newTrainObj) {
     newRow.append(destinationCol)
     var frequencyCol = $("<td>").text(newTrainObj.frequency);
     newRow.append(frequencyCol);
-    var nextTrainCol = $("<td>").text("Compute me");
+    var nextTrainCol = $("<td>").text(nextTrainFormatted);
     newRow.append(nextTrainCol);
-    var minutesAwayCol = $("<td>").text("Compute me");
+    var minutesAwayCol = $("<td>").text(minutesTillTrain);
     newRow.append(minutesAwayCol);
 
     $("#train-data").append(newRow);
 }
 
 ref.on("child_added", function(snapshot) {
-    console.log(snapshot.val());
     addToTable(snapshot.val());
 });
 
