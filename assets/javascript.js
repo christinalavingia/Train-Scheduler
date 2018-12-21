@@ -25,18 +25,31 @@ function addToTable(newTrainObj) {
     var nextTrain = moment().add(minutesTillTrain, "minutes");
     var nextTrainFormatted = nextTrain.format("HH:mm");
 
-    var newRow = $("<tr>");
-    var nameCol = $("<td>").text(newTrainObj.name);
-    newRow.append(nameCol);
-    var destinationCol = $("<td>").text(newTrainObj.destination);
-    newRow.append(destinationCol)
-    var frequencyCol = $("<td>").text(newTrainObj.frequency);
-    newRow.append(frequencyCol);
-    var nextTrainCol = $("<td>").text(nextTrainFormatted);
-    newRow.append(nextTrainCol);
-    var minutesAwayCol = $("<td>").text(minutesTillTrain);
-    newRow.append(minutesAwayCol);
-
+    if (currentTime.isAfter(nextTrainFormatted)) {
+        var newRow = $("<tr>");
+        var nameCol = $("<td>").text(newTrainObj.name);
+        newRow.append(nameCol);
+        var destinationCol = $("<td>").text(newTrainObj.destination);
+        newRow.append(destinationCol)
+        var frequencyCol = $("<td>").text(newTrainObj.frequency);
+        newRow.append(frequencyCol);
+        var nextTrainCol = $("<td>").text(nextTrainFormatted);
+        newRow.append(nextTrainCol);
+        var minutesAwayCol = $("<td>").text(minutesTillTrain);
+        newRow.append(minutesAwayCol);
+    } else {
+        var newRow = $("<tr>");
+        var nameCol = $("<td>").text(newTrainObj.name);
+        newRow.append(nameCol);
+        var destinationCol = $("<td>").text(newTrainObj.destination);
+        newRow.append(destinationCol)
+        var frequencyCol = $("<td>").text(newTrainObj.frequency);
+        newRow.append(frequencyCol);
+        var nextTrainCol = $("<td>").text(newTrainObj.time);
+        newRow.append(nextTrainCol);
+        var minutesAwayCol = $("<td>").text(minutesTillTrain);
+        newRow.append(minutesAwayCol);
+    }
     $("#train-data").append(newRow);
 }
 
