@@ -9,67 +9,38 @@ var config = {
 
 firebase.initializeApp(config);
 
-var db = firebase.database();
-var ref = db.ref();
+var trainData = firebase.database();
 
-function addTrain(newTrainObj) {
-    ref.push(newTrainObj);
-}
+$("#add-train").on("click", function () {
+    var trainName = $("#train-name").val().trim();
+    var destination = $("#destination").val().trim();
+    var firstTrain = moment($("#train-time").val().trim(), "HH:mm").subtract(10, "years").format("X");
+    var frequency = $("#frequency").val().trim();
 
-function addToTable(newTrainObj) {
-    var firstTimeConverted = moment(newTrainObj.time, "HH:mm");
-    var currentTime = moment();
-    var diffTime = currentTime.diff(firstTimeConverted, "minutes");
-    var tRemainder = diffTime % newTrainObj.frequency;
-    var minutesTillTrain = newTrainObj.frequency - tRemainder;
-    var nextTrain = moment().add(minutesTillTrain, "minutes");
-    var nextTrainFormatted = nextTrain.format("HH:mm");
-
-    if (currentTime.isAfter(nextTrainFormatted)) {
-        var newRow = $("<tr>");
-        var nameCol = $("<td>").text(newTrainObj.name);
-        newRow.append(nameCol);
-        var destinationCol = $("<td>").text(newTrainObj.destination);
-        newRow.append(destinationCol)
-        var frequencyCol = $("<td>").text(newTrainObj.frequency);
-        newRow.append(frequencyCol);
-        var nextTrainCol = $("<td>").text(nextTrainFormatted);
-        newRow.append(nextTrainCol);
-        var minutesAwayCol = $("<td>").text(minutesTillTrain);
-        newRow.append(minutesAwayCol);
-    } else {
-        var newRow = $("<tr>");
-        var nameCol = $("<td>").text(newTrainObj.name);
-        newRow.append(nameCol);
-        var destinationCol = $("<td>").text(newTrainObj.destination);
-        newRow.append(destinationCol)
-        var frequencyCol = $("<td>").text(newTrainObj.frequency);
-        newRow.append(frequencyCol);
-        var nextTrainCol = $("<td>").text(newTrainObj.time);
-        newRow.append(nextTrainCol);
-        var minutesAwayCol = $("<td>").text(minutesTillTrain);
-        newRow.append(minutesAwayCol);
+    var newTrain = {
+        name: trainName,
+        destination: destination,
+        firstTrain: firstTrain,
+        frequency: frequency
     }
-    $("#train-data").append(newRow);
-}
 
-ref.on("child_added", function (snapshot) {
-    addToTable(snapshot.val());
-});
+    trainData.ref().push(newTrain);
 
-$(document).ready(function () {
+    $("#train-name").val("");
+    $("#destination").val("");
+    $("#train-time").val("");
+    $("#frequency").val("");
+})
 
-    $("#add-train").on("click", function (event) {
-        event.preventDefault();
+trainData.ref().on("child_added", function (snapshot) {
+    var name = snapshot.val().name;
+    var destination = snapshot.val().destination;
+    var frequency = snapshot.val().frequency;
+    var firstTrain = snapshot.val().firstTrain;
 
-        var newTrain = {
-            name: $("#train-name").val().trim(),
-            destination: $("#destination").val().trim(),
-            time: $("#train-time").val().trim(),
-            frequency: $("#frequency").val().trim()
-        };
-        console.log(newTrain);
+    var remainder = moment().diff(moment.unix(firstTrain), "minutes") % frequency;
+    var minutes = frequency - remainder;
+    var arrival = moment().add(minutes, "m").format("hh:mm A");
 
-        addTrain(newTrain);
-    });
-});
+    $("#train-data").append("<tr><td>" + name + "</td><td>" + destination + "</td><td>" + frequency + "</td><td>" + arrival + "</td><td>" + minutes + "</td></tr>");
+})
